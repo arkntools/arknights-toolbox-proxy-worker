@@ -1,0 +1,10 @@
+name = "arknights-toolbox-proxy-worker"
+compatibility_date = "2024-08-11"
+
+workers_dev = false
+routes = [
+  { pattern = "arknights-toolbox-proxy.lolicon.app", custom_domain = true },
+]
+
+[vars]
+ALLOW_ORIGIN = "https://arkntools.app,https://arknbak.lolicon.app"
