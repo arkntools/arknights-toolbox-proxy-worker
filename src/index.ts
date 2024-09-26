@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { SKLAND_AUTH_URL, SKLAND_HEADER } from './const';
+import { SklandApiResp, sklandGenerateCredByCode, sklandOAuthLogin, SklandOauthLoginResp } from './skland';
+import { createProxyResponse } from './utils';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -15,17 +16,25 @@ app.use('*', async (c, next) => {
 });
 
 app.post('/as.hypergryph.com/user/oauth2/v2/grant', async c => {
-  const body = await c.req.json();
-  const resp = await fetch(SKLAND_AUTH_URL, {
-    method: 'POST',
-    headers: SKLAND_HEADER,
-    body: JSON.stringify({
-      appCode: '4ca99fa6b56cc2ba',
-      type: 0,
-      ...body,
-    }),
-  });
-  return new Response(resp.body, resp);
+  const resp = await sklandOAuthLogin(await c.req.json());
+  return createProxyResponse(resp);
+});
+
+app.post('/skland/oauth_combine', async c => {
+  const resp = await sklandOAuthLogin(await c.req.json());
+  const data: SklandOauthLoginResp = await resp.json();
+  if (data.status !== 0) {
+    return createProxyResponse(
+      resp,
+      JSON.stringify({
+        code: data.status,
+        message: data.msg,
+        data: data.data,
+      } satisfies SklandApiResp),
+    );
+  }
+  const resp2 = await sklandGenerateCredByCode(data.data.code, c.env.SKLAND_DID);
+  return createProxyResponse(resp2);
 });
 
 export default app;
