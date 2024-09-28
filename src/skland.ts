@@ -27,7 +27,7 @@ export const sklandOAuthLogin = (body: Record<string, any>) =>
     }),
   });
 
-export const sklandGenerateCredByCode = (code: string, dId: string) =>
+export const sklandGenerateCredByCode = (code: string, dId: string, ua?: string) =>
   fetch(SKLAND_GENERATE_CRED_BY_CODE_URL, {
     body: JSON.stringify({
       code,
@@ -36,7 +36,7 @@ export const sklandGenerateCredByCode = (code: string, dId: string) =>
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+      'user-agent': ua || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
       referer: 'https://www.skland.com/',
       origin: 'https://www.skland.com',
       dId,

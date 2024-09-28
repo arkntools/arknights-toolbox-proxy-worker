@@ -33,7 +33,7 @@ app.post('/skland/oauth_combine', async c => {
       } satisfies SklandApiResp),
     );
   }
-  const resp2 = await sklandGenerateCredByCode(data.data.code, c.env.SKLAND_DID);
+  const resp2 = await sklandGenerateCredByCode(data.data.code, c.req.header('Did') || c.env.SKLAND_DID, c.req.header('User-Agent'));
   return createProxyResponse(resp2);
 });
 
